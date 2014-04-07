@@ -1,0 +1,51 @@
+<!DOCTYPE html><!--HTML5 doctype-->
+<html>
+<head>
+	<title>Match 3</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" />
+
+	<style type="text/css">
+		/* Prevent copy paste for all elements except text fields */
+		*  { -webkit-user-select:none; -webkit-tap-highlight-color:rgba(255, 255, 255, 0); }
+		input, textarea  { -webkit-user-select:text; }
+		body { background-color:#CCC; color:black; zoom:1.3; }
+		.gamebox {
+			display: flex;
+		    flex-direction: row;
+		    flex-wrap: wrap;
+		    justify-content: center;
+		    align-items: center;
+		}
+	</style>
+
+	<script src='js/libs/require.js'></script>
+	<script src='js/main.js'></script>
+	<script src='js/paths.js'></script> 
+	<script type="text/javascript">
+		/* This code is used to run as soon as Intel activates */
+		var init = function(){
+			console.log('fire it up')
+			require(['game/start'], function (game) {
+			    game.start();
+			});
+			
+		};
+		
+	</script>
+</head>
+<body>
+	<!-- content goes here-->
+	<div class="gamebox">
+		<div id="game" >
+		</div>
+	</div>
+	<script>
+		require(['domready'], function (onDomReady) {
+			console.log('test');
+			onDomReady( init );
+		})
+		
+	</script>
+</body>
+</html>

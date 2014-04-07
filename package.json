@@ -1,0 +1,14 @@
+{
+  "name": "game",
+  "version": "0.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "test.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "static-cling": "~0.1.6"
+  }
+}
