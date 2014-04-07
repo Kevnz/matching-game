@@ -3,7 +3,7 @@ define(['crafty','game/game'], function (Crafty, Game) {
         init : function () {
             Crafty.c('Grid', {
                 init: function() {
-                    console.log('grid initter')
+                    
                 },
                 at: function(x, y) {
                     console.log('x,y at');

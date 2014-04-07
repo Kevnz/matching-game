@@ -13,8 +13,7 @@ define(['crafty', 'game/game','game/entities/brick'],
 	}
 
 	return {
-		init : function () {
-			var tile = 16; 
+		init : function () { 
 			for (var j = 1; j <= rows ; j++) {			
 				for (var i = 1; i <= cols; i++) { 
 					Brick.init(randomSprite(), i, j );

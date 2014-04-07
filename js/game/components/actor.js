@@ -5,6 +5,7 @@ define(['crafty', 'game/components/grid'], function (Crafty, Grid) {
             Grid.init();
             Crafty.c('Actor', {
                 init: function() {
+                    console.log('test')
                     this.requires('2D, Canvas, Grid');
                 },
             });

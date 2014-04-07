@@ -1,6 +1,7 @@
 define(['crafty', 'game/assets/loading'], function (Crafty, loading) {
 	return {
 		init : function (scene) {
+			console.log('scene loading')
 			Crafty.scene('loading', function () {
 				loading.init();
 				Crafty.load(['/assets/blocks.png'], function () {
@@ -13,7 +14,8 @@ define(['crafty', 'game/assets/loading'], function (Crafty, loading) {
 						selected: [0,4]
 					});
 				});
-				Crafty.scene(scene);
+
+ 
 			});
 		}
 	};
