@@ -9,8 +9,7 @@ define(['crafty', 'game/game', 'game/components/display'], function (Crafty, Gam
                    Crafty.trigger('timeup');
                    return;     
                 }
-                if(f.frame % 5 === 0) {
-                    
+                if(f.frame % 50 === 0) {
                     this.time = this.time - 1;
                     var displayTime = (this.time) / 60;
                     this.text(displayTime.toString().split('.')[0] + ':' + ((this.time % 60) < 10 ? '0' + (this.time % 60) : (this.time % 60))  );
