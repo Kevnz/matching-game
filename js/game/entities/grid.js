@@ -91,11 +91,13 @@ define(['crafty', 'game/game','game/entities/brick'],
  			console.log(blown);
  			if(!blown) {
  				console.log('that did not work');
-	 			previousSelected.tweenTo(prevX, prevY, 900 );
-	 			currentSelected.tweenTo( currX,currY, 900  );
+
+	 			previousSelected.tweenTo(prevY, prevX, 900 );
+	 			currentSelected.tweenTo( currY, currX, 900  );
  
-	 			gameGrid[prevY  - 1][prevX - 1] = previousSelected;
-	 			gameGrid[currY - 1][currX  - 1] = currentSelected;
+ 
+	 			gameGrid[currY - 1][currX - 1] = currentSelected;
+				gameGrid[prevY - 1][prevX - 1] = previousSelected;
  			}
  		}				
 	};
@@ -106,8 +108,12 @@ var remove = function (brick) {
 	var y = brick.gridY - 1;
 	try{
 		  gameGrid[y][x] = null;
-		  brick.tween({alpha: 0.0}, 600).destroy();
-		  Crafty.trigger('scored', 10);
+		  brick.bind('TweenEnd', function(){
+		  	brick.destroy();
+		  	Crafty.trigger('scored', 10);
+		  })
+		  brick.tween({alpha: 0.0}, 600);
+		  
 	} catch(er){
 		console.log(brick);
 	}
@@ -234,10 +240,22 @@ var newScan = function () {
 	for (var j = 0; j < 20; j++) {
 		fall();
 	}
+	drop();
 	return result;
 
 
 };
+
+var drop = function () {
+	var column, row;
+	var drops = [];
+
+	for (column = 0; column < gameGrid.length ; column++) { 
+		for (row = gameGrid[column].length - 1; row >= 0 ; row--) {	 
+			if(!gameGrid[column][row]) Brick.init(randomSprite(), row+1, column+1 );
+		}
+	}
+}
 	return {
 		init : function () { 
 			for (var j = 1; j <= cols ; j++) {
