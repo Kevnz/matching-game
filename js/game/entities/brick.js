@@ -4,16 +4,17 @@ define(['crafty', 'game/components/actor', 'game/components/selectable', 'game/c
 			Actor.init();
 			Selectable.init(); 
 			Adjacent.init();
-			var cBuild = 'Actor, Block, Grid, Gravity, Collision, Platform, Selectable, Adjacent, '+ sprite;
+			var cBuild = 'Actor, Block, Mouse, Grid, Gravity, Collision, Platform, Selectable, Adjacent, '+ sprite;
 			var selectedSprite = sprite + 'Selected';
 			var b = Crafty.e(cBuild).at( x, y)
 				.attr({color: sprite})
-				.gravity( "Platform"   ) 
-				.gravityConst(0.7)
+				//.gravity( "Platform"   ) 
+				//.gravityConst(0.7)
 				.bind('Click', function (e) {
+					console.log(this.gridX);
+					console.log(this.gridY);
 					this.attr('clicked', true);
-					Crafty.trigger('selected', this);
-					console.log(this.clicked);
+					Crafty.trigger('selected', this); 
 					this.addComponent(selectedSprite );
 					this.removeComponent(sprite);
 					this.attr('clicked', false);
@@ -22,7 +23,7 @@ define(['crafty', 'game/components/actor', 'game/components/selectable', 'game/c
 					//console.log('selected');
 					if (this.clicked ===  false) { 
 						//determine if is a valid move
-
+						//if ()
 						//else it deselects
 						console.log('clicked to remove ' + selectedSprite);
 						b.removeComponent(selectedSprite);

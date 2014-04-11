@@ -9,7 +9,7 @@ define(function () {
     return {
     // This defines our grid's size and the size of each of its tiles
         map_grid: {
-            width:  16,
+            width:  14,
             height: 16,
             tile: {
                 width:  32,

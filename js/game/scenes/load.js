@@ -7,7 +7,7 @@ define(['crafty', 'game/assets/loading'], function (Crafty, loading) {
 		init : function () {
 			Crafty.scene('load', function () {
 				loading.init();
-				Crafty.load(['/assets/blocks.png'], function () {
+				Crafty.load(['/assets/blocks.png', '/assets/play_pause.png'], function () {
 					console.log('splicing');
 					Crafty.sprite(32, '/assets/blocks.png', {
 						blue: [0, 0],
@@ -26,6 +26,10 @@ define(['crafty', 'game/assets/loading'], function (Crafty, loading) {
 						purpleSelected: [5,1],
 						blackSelected: [6,1],
 						greySelected: [7,1]
+					});
+					Crafty.sprite(128, '/assets/play_pause.png', {
+						play: [0, 0],
+						pause: [1,0]
 					});
 					setTimeout(playScene, 2000);
 				});
