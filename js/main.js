@@ -5,7 +5,10 @@ requirejs.config({
 		},
 		domready: {
 			exports: 'onDomReady'
-		}
+		},
+        sift: {
+            exports: 'sift'
+        }
 	},
 	waitSeconds: 10
 });

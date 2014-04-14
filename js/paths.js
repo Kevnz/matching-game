@@ -3,8 +3,8 @@ requirejs.config( {
 	//Project Paths
 		game: 'js/game',
 		util: 'js/util',
-		//Terabyte Libs
 		crafty: 'js/libs/crafty',
-		domready: 'js/libs/ondomready'
+		domready: 'js/libs/ondomready',
+        sift: 'js/libs/sift'
 	}
 } );

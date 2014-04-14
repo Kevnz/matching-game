@@ -21,11 +21,16 @@ define(['crafty','game/game'], function (Crafty, Game) {
                     return isAboveOrBelow || isBeside;
                 },
                 tweenTo: function (column, row, time){
-                    if(!time) time = 800
+                    if(!time) time = 300
                     if(!row) row = this.gridX;
 
                     this.attr({gridX: row, gridY:column });
                     this.tween({ x: row * Game.map_grid.tile.width, y: column * Game.map_grid.tile.height }, time);
+                },
+                tweenWithGrid: function (column, row, time) {
+                    this.attr({gridX: row, gridY:column });
+                    this.tween({ x: (1+ row) * Game.map_grid.tile.width, y: (1+column) * Game.map_grid.tile.height }, time);
+
                 },
                 slide: function (){
                     console.log('this y', this.y);

@@ -14,8 +14,24 @@ define(['crafty',
                 Clock.init();
                 var stand = Platform.init();
 				Grid.init();
-				Grid.newScan();
+
+                /*
+                var reds = Grid.sift();
+
+                for(var i = 0; i < reds.length; i++) {
+                    console.log(reds[i]);
+                    reds[i].tween({alpha:0.0}, 500);
+                    //Grid.debug(reds[i].gridX, reds[i].gridY);
+                }
+                */
+
+				Grid.sift();
+                Grid.fall();
 				//Grid.debug(3, 8);
+                //Grid.debug(2, 8);
+                //Grid.debug(9, 3);
+                ///Grid.debug(11,11);
+
 				//Grid.debug(0,0);
 				/*
 				Crafty.bind('EnterFrame', function (data) {
