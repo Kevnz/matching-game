@@ -1,6 +1,6 @@
 define(['crafty', 'game/game','game/entities/brick', 'sift'],
 	function (Crafty, Game, Brick, sift) {
-	
+	var isMove = false;
 	const ANIMATION_SPEED = 300;
 	var rows = 12;
 	var cols = 12;
@@ -30,35 +30,38 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
     };
     var killBox = [];
 	var currentSelected = null;
+    var swap = function (brick1, brick2){
 
+        var x1 = brick1.x, x2 = brick2.x, y1 = brick1.y, y2 = brick2.y;
+        var gridX1 = brick1.gridX, gridX2 = brick2.gridX, gridY1 = brick1.gridY, gridY2 = brick2.gridY;
+
+        console.log('x1', x1);
+        console.log('x2', x2);
+        console.log('y1', y1);
+        console.log('y2', y2);
+        brick1.attr({gridX:gridX2, gridY: gridY2});
+        brick1.tween({x:x2, y:y2}, 500);
+        brick2.attr({gridX:gridX1, gridY: gridY1});
+        brick2.tween({x:x1, y:y1}, 500);
+
+    }
 	var selection = function (brick){
-		//console.log('selection');
-		//console.log('brick', brick)
-		//console.log('previousSelected', currentSelected)
+
 		var previousSelected = currentSelected;
 		currentSelected = brick; 
 		if(previousSelected === null) return;
 
 		
  		if(currentSelected.isAdjacent(previousSelected)){
- 			//console.log('isAdjacent');
- 			var prevX = previousSelected.gridX ;
- 			var prevY = previousSelected.gridY;
- 			var currX = currentSelected.gridX ;
- 			var currY = currentSelected.gridY ;
-
- 			previousSelected.tweenTo(currY, currX);
- 			currentSelected.tweenTo( prevY, prevX );
- 			//console.log((currX - 1) + ' ' + (currY-1));
- 			//console.log(gameGrid);
- 			gameGrid[currY - 1][currX - 1] = previousSelected;
- 			gameGrid[prevY - 1][prevX - 1] = currentSelected;
+            swap(currentSelected, previousSelected);
+            //return;
  			var blown = siftingScan();
- 			//console.log(blown);
+ 			console.log(blown);
+            return;
  			if(!blown) {
  				console.log('not a valid move');
-	 			previousSelected.tweenTo(prevY, prevX, ANIMATION_SPEED );
-	 			currentSelected.tweenTo( currY, currX, ANIMATION_SPEED  );
+	 			previousSelected.tweenWithGrid(prevY, prevX, ANIMATION_SPEED );
+	 			currentSelected.tweenWithGrid( currY, currX, ANIMATION_SPEED  );
 	 			gameGrid[currY - 1][currX - 1] = currentSelected;
 				gameGrid[prevY - 1][prevX - 1] = previousSelected;
  			} else {
@@ -70,7 +73,7 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
 
                 drop();
             }
- 		}				
+ 		}
 	};
 
 var remove = function (brick) {
@@ -131,9 +134,8 @@ var goDeep = function (column, row) {
 		console.dir(gameGrid[column]);
 		return true;
 	}
+};
 
-
-}
 var fall = function () {
     console.log('fall');
 	var row,column;
@@ -207,93 +209,6 @@ var siftingScan = function () {
     return foundMatch;
 
 };
-var scan = function () {
-    console.log('scan');
-	var result;
-	killBox = [];
-	var brick, above, below, left, right;
-	var row,column;
-
-    var siftBricksOnX = function(x, y){
-        return sift({
-            gridY: function (value) {
-                return value === y;
-            },
-            gridX: function(value) {
-                return value === x || value === (x-1) || value === (x+1);
-            }
-        })
-    };
-
-    var siftBricksOnY = function(y, x){
-        return sift({
-            gridX: function (value) {
-                return value === x;
-            },
-            gridY: function(value) {
-                return value === y || value === (y-1) || value === (y+1);
-            }
-        })
-    };
-	for (column = 0; column < gameGrid.length; column++) {
-		for (row = 0; row < gameGrid[column].length; row++) {		
-			brick = gameGrid[column][row];
-			if (brick) {
-				if (column !== 0) {
-					above = gameGrid[column-1][row];
-				} else {
-					above = { color: false }
-				}
-				if (column < zeroBasedColumnCount) {
-					below = gameGrid[column+1][row];
-				} else {
-					below = { color: false }
-				}
-				if (row > 0) {
-					left = gameGrid[column][row-1];
-				} else {
-					left = { color: false }
-				}
-				if (row < zeroBasedRowCount) {
-					right = gameGrid[column][row+1];
-				} else {
-					right = { color: false }
-				}
-				try {
-					if (brick.color === above.color && brick.color === below.color) {
-						//console.log('awesome sauce, a vertical line match ' + brick.color);
-						killBox.push(above);
-						killBox.push(above);
-						killBox.push(brick);
-						killBox.push(below);
-					}
-				} catch(cErr){
-					console.log('err', brick);
-				}
-				
-
-				try {
-					if (brick.color === left.color && brick.color === right.color) {
-						//console.log('awesome sauce, a horizontal line match ' + brick.color);
-						killBox.push(left);
-						killBox.push(brick);
-						killBox.push(right) 
-					}		 
-				} catch(cErr){
-					console.log('err', brick);
-				}
-			}
-		}
-
-	}
-	result = killBox.length > 0;
-
-    Crafty.trigger('scan_complete', result);
-	return result;
-
-
-};
-
 
 var goLower = function (column, row) {
    // console.log('goLower');
@@ -394,13 +309,12 @@ var drop = function () {
 
                 drop();
                 if (result) {
-                    scan();
+                    siftingScan();
                 }
 
             });
  
 		},
-		scan: scan,
         fall: function() {
 
 
