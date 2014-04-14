@@ -61,7 +61,15 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
 	 			currentSelected.tweenTo( currY, currX, ANIMATION_SPEED  );
 	 			gameGrid[currY - 1][currX - 1] = currentSelected;
 				gameGrid[prevY - 1][prevX - 1] = previousSelected;
- 			}
+ 			} else {
+                lower();
+
+                for(var i = 0; i < 12; i++) {
+                    lower()
+                }
+
+                drop();
+            }
  		}				
 	};
 
@@ -347,14 +355,20 @@ var drop = function () {
 	var column, row;
 	var drops = [];
 
-	for (column = 0; column < gameGrid.length ; column++) {
-		for (row = 11; row >= 0 ; row--) {
-            while (!goDeep(column, row)) {
-                //console.log('goDeep');
-            };
-		}
-	}
+    console.log('dropping in');
+    var nullSpots = sift({ $exists: false }, blocks());
+    console.log('nullSpots',nullSpots);
+    for (var column = 0; column < cols ; column++) {
+        for (var row = 0; row <  rows; row++) {
+            if(gameGrid[column][row] === null) {
+                console.log('null');
+                gameGrid[column][row] = Brick.init(randomSprite(), row+1, column+1);
+            }
+        }
+    }
+    var nullSpotsAfter = sift({ $exists: false }, blocks());
 
+    console.log('nullSpotsAfter',nullSpotsAfter);
     Crafty.trigger('drop_complete');
 };
 
@@ -400,15 +414,9 @@ var drop = function () {
             var sifting = sift({ $exists: true }, blocks());
             //var res = ;
 
-            console.log('res', (sift({ $exists: false }, blocks()).length > 0));
+            //console.log('res', (sift({ $exists: false }, blocks()).length > 0));
+            drop();
 
-            return;
-            while((sift({ $exists: false }, blocks())).length > 0){
-                console.log('bugger');
-                fall();
-                lower();
-                lower();
-            }
         },
         burn:  function (start, finish) {
 			if (start == undefined) {
