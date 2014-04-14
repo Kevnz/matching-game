@@ -33,7 +33,6 @@ define(['crafty', 'game/components/actor', 'game/components/selectable', 'game/c
 				.bind('EnterFrame', function () {
 
 				});
-            b.tween({})
 			return b;
 		}
 	};
