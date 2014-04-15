@@ -1,7 +1,1 @@
-var config = {
-    root: '.',
-    port: 3000,
-    filename: 'index.html'
-}
-//overriding defaults
-require('static-cling').cling({ port: 4321, root : './' });
+require('static-cling').cling({ port: process.env.PORT || 4321, root : './' });
