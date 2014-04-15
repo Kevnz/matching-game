@@ -43,10 +43,7 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
 
         var x1 = brick1.x, x2 = brick2.x, y1 = brick1.y, y2 = brick2.y;
         var gridX1 = brick1.gridX, gridX2 = brick2.gridX, gridY1 = brick1.gridY, gridY2 = brick2.gridY;
-        console.log('x1', x1);
-        console.log('x2', x2);
-        console.log('y1', y1);
-        console.log('y2', y2);
+
         gameGrid[gridY1][gridX1] = brick2;
         gameGrid[gridY2][gridX2] = brick1;
         brick1.attr({gridX:gridX2, gridY: gridY2});
@@ -56,8 +53,6 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
 
     };
 	var selection = function (brick){
-        console.log(brick.gridX);
-        console.log(brick.gridY);
 		var previousSelected = currentSelected;
 		currentSelected = brick; 
 		if(previousSelected === null) return;
@@ -69,13 +64,9 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
             //return;
             delayFactory(function(){
                 var blown = siftingScan();
-                console.log('Blown up?',blown);
-
+                console.log(blown);
                 if(!blown) {
-                    previousSelected.tweenWithGrid(prevY, prevX, ANIMATION_SPEED );
-                    currentSelected.tweenWithGrid( currY, currX, ANIMATION_SPEED  );
-                    gameGrid[currY][currX] = currentSelected;
-                    gameGrid[prevY][prevX] = previousSelected;
+                    swap(currentSelected, previousSelected);
                 } else {
                     falling();
                     moveDown();
@@ -87,7 +78,6 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
 	};
 
 var remove = function (brick) {
-    console.log('remove');
 	if(!brick.gridX) return;
 	var x = brick.gridX;
 	var y = brick.gridY;
@@ -101,7 +91,7 @@ var remove = function (brick) {
 		  brick.tween({alpha: 0.0}, ANIMATION_SPEED);
 		  
 	} catch(er){
-		console.log(brick);
+		console.log('errBrick', brick);
 	}
 };
 var isEmptyBelow = function (brick) {
@@ -111,7 +101,7 @@ var isEmptyBelow = function (brick) {
 
 var siftingScan = function () {
    var results = simpleScan();//not really simple;
-    console.log(results);
+
     var foundMatch = results.length > 0;
     for(var j = 0; j < results.length; j++) {
         remove(results[j]);
@@ -178,9 +168,7 @@ var drop = function () {
 	var column, row;
 	var drops = [];
 
-    var nullSpots = sift({ $exists: false }, blocks()).length;
     var insertCount = 0;
-    console.log('nullSpots',nullSpots);
     for (var column = 0; column < cols ; column++) {
         for (var row = 0; row <  rows; row++) {
             if(gameGrid[column][row] === null) {
@@ -192,8 +180,7 @@ var drop = function () {
     }
     var nullSpotsAfter = sift({ $exists: false }, blocks());
 
-    console.log('nullSpotsAfter',nullSpotsAfter.length);
-    console.log('before count and insert count', nullSpots+' '+insertCount );
+
     Crafty.trigger('drop_complete');
 };
 var moveDown = function (){
@@ -213,9 +200,9 @@ var falling = function() {
             drop();
             delayFactory(function (){
                 var stillNeedToMove = simpleScan().length > 0;
-                console.log('delay check');
+                console.log('stillNeedToMove', stillNeedToMove);
                 if(stillNeedToMove){
-                    loop();
+                    //loop();
                 }
             })
         }, ANIMATION_SPEED);
@@ -269,24 +256,14 @@ var simpleScan = function () {
         if(bricks[i]) {
             var tempOnX = siftBricksOnX(bricks[i]);
             var tempOnY = siftBricksOnY(bricks[i]);
-            console.log(tempOnX.length);
 
             if (tempOnX.length > 2) {
 
-                for (var kk = 0; kk < tempOnX.length; kk++) {
-                    console.log('x match ', tempOnX);
-                    console.log('X gridX', tempOnX[kk].gridX);
-                    console.log('X gridY', tempOnX[kk].gridY);
-                }
+
                 results = results.concat(tempOnX);
             }
             if (tempOnY.length > 2) {
-                console.log(tempOnY.length);
-                console.log('Y match', tempOnY);
-                for (var jj = 0; jj < tempOnY.length; jj++) {
-                    console.log('Y gridX', tempOnY[jj].gridX);
-                    console.log('Y gridY', tempOnY[jj].gridY);
-                }
+
                 results = results.concat(tempOnY);
             }
         }
@@ -340,7 +317,7 @@ var simpleScan = function () {
 				finish = gameGrid.length
 			}
 			for (var i = 0; i < finish; i++) {
-				console.log(gameGrid[i][0]);
+
 				try {
 					gameGrid[i][0].tween({alpha: 0.0}, 800).destroy();
 				} catch(error) {

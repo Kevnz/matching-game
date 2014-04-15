@@ -43,12 +43,32 @@
 		<div id="cr-stage" >
 		</div>
 	</div>
-	<script>
-		require(['domready'], function (onDomReady) {
-			console.log('test');
-			onDomReady( init );
-		})
+
+    <script>
+        require(['domready'], function (onDomReady) {
+            console.log('test');
+            onDomReady( init );
+        })
+
+    </script>
+    <script src='intelxdk.js'></script>
+	<script type="text/javascript">
+		/* This code is used to run as soon as Intel activates */
+		var onDeviceReady=function(){
+		//hide splash screen
+		intel.xdk.device.hideSplashScreen();
+            init();
+		};
+		document.addEventListener("intel.xdk.device.ready",onDeviceReady,false);
+ 
 		
 	</script>
+    <script>
+        require(['domready'], function (onDomReady) {
+            console.log('test');
+            onDomReady( init );
+        })
+
+    </script>
 </body>
 </html>

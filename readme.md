@@ -110,3 +110,5 @@ Removes a piece based on column/row coordinates
 ##### Game.js
 This object contains the configuration elements of the game. Width, height, columns, rows. Anything configurable should be put into this object
 
+#### Issues
+During the last bit of testing I have noticed the left hand column doesn't have the gems removed even when they match.

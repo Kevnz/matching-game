@@ -41,7 +41,6 @@ var inspect = function (e) {
                   //determine if is a valid move
                   //if ()
                   //else it deselects
-                  console.log('clicked to remove ' + selectedSprite);
                   b.removeComponent(selectedSprite);
                   b.addComponent(sprite);
               }
@@ -67,14 +66,10 @@ var inspect = function (e) {
                 //.gravityConst(0.7)
                 .bind('MouseUp', inspect)
                 .bind('Click', function (e) {
-                    console.log(e);
                     if(e.mouseButton === Crafty.mouseButtons.RIGHT){
-                        console.log('inspect');
-                        console.log(this.gridX);
-                        console.log(this.gridY);
+
                         return;
                     }
-                    console.log('click');
 
                     this.attr('clicked', true);
                     Crafty.trigger('selected', this);
@@ -83,12 +78,10 @@ var inspect = function (e) {
                     this.attr('clicked', false);
                 })
                 .bind('selected', function (e) {
-                    console.log('selected');
                     if (this.clicked ===  false) {
                         //determine if is a valid move
                         //if ()
                         //else it deselects
-                        console.log('clicked to remove ' + selectedSprite);
                         b.removeComponent(selectedSprite);
                         b.addComponent(sprite);
                     }
@@ -96,7 +89,6 @@ var inspect = function (e) {
                 .bind('EnterFrame', function () {
 
                 });
-            console.log(Game.animation_speed);
             b.tween({alpha: 1.0}, Game.animation_speed );
             return b;
         }
