@@ -10,6 +10,7 @@ define(['crafty', 'game/game','game/scenes/load', 'game/scenes/play','game/scene
 			load.init();
             end.init();
 			Crafty.scene('load');
+            //final scene?
             Crafty.bind('timeup', function (){
                 Crafty.scene('end');
             })
