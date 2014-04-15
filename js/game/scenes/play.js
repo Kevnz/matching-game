@@ -42,6 +42,7 @@ define(['crafty',
                  */
 				Crafty.bind('timeup', function () {
 					stand.destroy();
+
 				})
 				//Grid.scan();
 
