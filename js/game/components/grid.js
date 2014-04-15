@@ -23,13 +23,6 @@ define(['crafty','game/game'], function (Crafty, Game) {
                     var isBeside = (this.gridY === entity.gridY -1 || this.gridY === entity.gridY + 1) && this.gridX === entity.gridX;
                     return isAboveOrBelow || isBeside;
                 },
-                tweenTo: function (column, row, time){
-                    if(!time) time = ANIMATION_SPEED;
-                    if(!row) row = this.gridX;
-
-                    this.attr({gridX: row, gridY:column });
-                    this.tween({ x: row * Game.map_grid.tile.width, y: column * Game.map_grid.tile.height }, time);
-                },
                 tweenWithGrid: function (column, row, time) {
                     if(!time) time = ANIMATION_SPEED;
 

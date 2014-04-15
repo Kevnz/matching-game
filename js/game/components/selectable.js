@@ -5,7 +5,7 @@ define(['crafty'], function (Crafty) {
             Crafty.c('Selectable', {
                 init: function() { 
                     this.requires('Mouse');
-                },
+                }
             });
         }
     };

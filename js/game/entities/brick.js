@@ -83,7 +83,7 @@ var inspect = function (e) {
                     this.attr('clicked', false);
                 })
                 .bind('selected', function (e) {
-                    //console.log('selected');
+                    console.log('selected');
                     if (this.clicked ===  false) {
                         //determine if is a valid move
                         //if ()

@@ -5,11 +5,11 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
         return Crafty.e("Delay").delay(callback, delayTime, 0);
     };
 	var isMove = false;
-	const ANIMATION_SPEED = 900;
-	var rows = 12;
-	var cols = 12;
-	var zeroBasedRowCount = 11;
-	var zeroBasedColumnCount = 11;
+	const ANIMATION_SPEED = Game.animation_speed;
+	var rows = Game.rows;
+	var cols = Game.columns;
+	var zeroBasedRowCount = rows -1;
+	var zeroBasedColumnCount = cols - 1;
 	var randomSprite = function () {
 		var to = 7, from = 0;
 		var random = Math.floor(Math.random() * (to - from + 1) + from);
@@ -130,9 +130,6 @@ var goLower = function (column, row) {
         if (row > zeroBasedRowCount) return true;
         if (column > zeroBasedColumnCount) return true;
 
-        if(column > zeroBasedColumnCount) return true;
-        //var below = gameGrid[column][row+1];
-
         var lowest;
         for (var i = column + 1; i <= zeroBasedColumnCount; i ++) {
 
@@ -214,6 +211,13 @@ var falling = function() {
 
         delayFactory(function () {
             drop();
+            delayFactory(function (){
+                var stillNeedToMove = simpleScan().length > 0;
+                console.log('delay check');
+                if(stillNeedToMove){
+                    loop();
+                }
+            })
         }, ANIMATION_SPEED);
 
     }, ANIMATION_SPEED);
@@ -300,7 +304,7 @@ var simpleScan = function () {
 			}
 
 			Crafty.bind('selected', selection);
-            Crafty.bind('scan_complete', function (e) {
+            Crafty.bind('drop_complete', function (e) {
 
 
 

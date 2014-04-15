@@ -16,6 +16,8 @@ define(function () {
                 height: 32
             }
         },
+        columns: 12,
+        rows: 12,
         width: function() {
             return this.map_grid.width * this.map_grid.tile.width;
         },
@@ -26,7 +28,7 @@ define(function () {
             return 'Canvas';
         },
         text: text_css,
-        animation_speed: 900
+        animation_speed: 800
 
  
     }
