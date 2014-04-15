@@ -1,7 +1,11 @@
 define(['crafty', 'game/game','game/entities/brick', 'sift'],
 	function (Crafty, Game, Brick, sift) {
+
+    var delayFactory =  function (callback, delayTime){
+        return Crafty.e("Delay").delay(callback, delayTime, 0);
+    };
 	var isMove = false;
-	const ANIMATION_SPEED = 300;
+	const ANIMATION_SPEED = 900;
 	var rows = 12;
 	var cols = 12;
 	var zeroBasedRowCount = 11;
@@ -23,7 +27,12 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
 
         for (column = 0; column < gameGrid.length; column++) {
             for (row = 0; row < gameGrid[column].length; row++) {
-                results.push(gameGrid[column][row]);
+                var ent = gameGrid[column][row];
+                if(ent) {
+                    ent.hash = 'column:'+column+'|row:' + row;
+                }
+                //
+                results.push(ent);
             }
         }
         return results;
@@ -34,59 +43,61 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
 
         var x1 = brick1.x, x2 = brick2.x, y1 = brick1.y, y2 = brick2.y;
         var gridX1 = brick1.gridX, gridX2 = brick2.gridX, gridY1 = brick1.gridY, gridY2 = brick2.gridY;
-
         console.log('x1', x1);
         console.log('x2', x2);
         console.log('y1', y1);
         console.log('y2', y2);
+        gameGrid[gridY1][gridX1] = brick2;
+        gameGrid[gridY2][gridX2] = brick1;
         brick1.attr({gridX:gridX2, gridY: gridY2});
         brick1.tween({x:x2, y:y2}, 500);
         brick2.attr({gridX:gridX1, gridY: gridY1});
         brick2.tween({x:x1, y:y1}, 500);
 
-    }
+    };
 	var selection = function (brick){
-
+        console.log(brick.gridX);
+        console.log(brick.gridY);
 		var previousSelected = currentSelected;
 		currentSelected = brick; 
 		if(previousSelected === null) return;
 
 		
+
  		if(currentSelected.isAdjacent(previousSelected)){
             swap(currentSelected, previousSelected);
             //return;
- 			var blown = siftingScan();
- 			console.log(blown);
-            return;
- 			if(!blown) {
- 				console.log('not a valid move');
-	 			previousSelected.tweenWithGrid(prevY, prevX, ANIMATION_SPEED );
-	 			currentSelected.tweenWithGrid( currY, currX, ANIMATION_SPEED  );
-	 			gameGrid[currY - 1][currX - 1] = currentSelected;
-				gameGrid[prevY - 1][prevX - 1] = previousSelected;
- 			} else {
-                lower();
+            delayFactory(function(){
+                var blown = siftingScan();
+                console.log('Blown up?',blown);
 
-                for(var i = 0; i < 12; i++) {
-                    lower()
+                if(!blown) {
+                    previousSelected.tweenWithGrid(prevY, prevX, ANIMATION_SPEED );
+                    currentSelected.tweenWithGrid( currY, currX, ANIMATION_SPEED  );
+                    gameGrid[currY][currX] = currentSelected;
+                    gameGrid[prevY][prevX] = previousSelected;
+                } else {
+                    falling();
+                    moveDown();
+
                 }
-
-                drop();
-            }
+                currentSelected = null;
+            }, ANIMATION_SPEED);
  		}
 	};
 
 var remove = function (brick) {
     console.log('remove');
 	if(!brick.gridX) return;
-	var x = brick.gridX - 1;
-	var y = brick.gridY - 1;
+	var x = brick.gridX;
+	var y = brick.gridY;
 	try{
 		  gameGrid[y][x] = null;
 		  brick.bind('TweenEnd', function(){
 		  	brick.destroy();
 		  	Crafty.trigger('scored', 10);
-		  })
+            Crafty.trigger('brick:removed', {x:x,y:y});
+		  });
 		  brick.tween({alpha: 0.0}, ANIMATION_SPEED);
 		  
 	} catch(er){
@@ -96,61 +107,125 @@ var remove = function (brick) {
 var isEmptyBelow = function (brick) {
 
 }
-var fallDown = function (brick) { 
-    console.log('fallDown');
-	if(brick == null) return;
-	var row = brick.gridY;
-	var j = brick.gridY-1;
-	var i = brick.gridX-1;
-	var _brick = gameGrid[j][i]; 
-	if( (j+1) > gameGrid.length ) return;
-	var below = gameGrid[j+1][i] ; 
 
-	if(below && _brick) { 
-		_brick.slide();
-		gameGrid[j][i] = null;
-		gameGrid[j+1][i] = _brick;
-		fallDown(brick);
-
-	}
-}
-var goDeep = function (column, row) {
-    console.log('goDeep');
-	try {
-		var brick = gameGrid[column][row];
-        if ((brick) === null) return true;
-		var below = gameGrid[column][row+1];
-        if(column > zeroBasedColumnCount) return true;
-		if(below == null  && brick != null) {
-			gameGrid[column + 1][row] = brick;
-		 	gameGrid[column][row] = null;
-		 	brick.tweenTo(column+2);
-		 	return false;
-		} return true;
-	} catch (err) {
-		console.log(err);
-		console.log('column', column);
-		console.log('row', row);
-		console.dir(gameGrid[column]);
-		return true;
-	}
-};
-
-var fall = function () {
-    console.log('fall');
-	var row,column;
-	for (column = 0; column < gameGrid.length ; column++) {
-		//for (row = gameGrid[column].length; row >= 0; row--) {
-		for (row = gameGrid[column].length - 1; row >= 1 ; row--) {
-			while (!goDeep(column,row)) {
-				console.log('goDeep');
-			};
-		}
-	}
-    Crafty.trigger('fall_complete')
-}
 
 var siftingScan = function () {
+   var results = simpleScan();//not really simple;
+    console.log(results);
+    var foundMatch = results.length > 0;
+    for(var j = 0; j < results.length; j++) {
+        remove(results[j]);
+    }
+
+    return foundMatch;
+
+};
+
+var goLower = function (column, row) {
+   // console.log('goLower');
+
+    try {
+        var brick = gameGrid[column][row], b;
+        if ((brick) === null) return true;
+        if (row > zeroBasedRowCount) return true;
+        if (column > zeroBasedColumnCount) return true;
+
+        if(column > zeroBasedColumnCount) return true;
+        //var below = gameGrid[column][row+1];
+
+        var lowest;
+        for (var i = column + 1; i <= zeroBasedColumnCount; i ++) {
+
+            b = gameGrid[i][row];
+            //console.log(b);
+            if(!b) lowest = i;
+            if(b) break;
+        }
+        //if (lowest) console.log('lowest', lowest);
+        if (!lowest) return true;
+        var below = gameGrid[lowest][row];
+        if (below == null  && brick != null) {
+
+            gameGrid[lowest][row] = brick;
+
+            gameGrid[column][row] = null;
+            brick.tweenWithGrid(lowest, row, ANIMATION_SPEED);
+
+            return false;
+        } return true;
+    } catch (err) {
+        console.log(err);
+        console.log('column', column);
+        console.log('row', row);
+        console.log('lowest', lowest);
+        console.dir(gameGrid[column]);
+
+        return true;
+    }
+
+
+};
+var lower = function () {
+    for (column = 0; column < cols ; column++) {
+        for (row = 11; row >= 0 ; row--) {
+            //console.log({column: column, row: row});
+
+            while (!goLower(column, row)) {
+                //console.log('while going Lower');
+            };
+        }
+    }
+
+};
+var drop = function () {
+	var column, row;
+	var drops = [];
+
+    var nullSpots = sift({ $exists: false }, blocks()).length;
+    var insertCount = 0;
+    console.log('nullSpots',nullSpots);
+    for (var column = 0; column < cols ; column++) {
+        for (var row = 0; row <  rows; row++) {
+            if(gameGrid[column][row] === null) {
+
+                insertCount++;
+                gameGrid[column][row] = Brick.fadeIn(randomSprite(), row, column);
+            }
+        }
+    }
+    var nullSpotsAfter = sift({ $exists: false }, blocks());
+
+    console.log('nullSpotsAfter',nullSpotsAfter.length);
+    console.log('before count and insert count', nullSpots+' '+insertCount );
+    Crafty.trigger('drop_complete');
+};
+var moveDown = function (){
+    for(var i = 0; i < 12; i++) {
+        lower();
+    }
+};
+var falling = function() {
+
+    delayFactory(function () {
+
+        lower();
+        //multiple lower call;
+        moveDown();
+
+        delayFactory(function () {
+            drop();
+        }, ANIMATION_SPEED);
+
+    }, ANIMATION_SPEED);
+};
+var loop = function () {
+  siftingScan();
+  delayFactory(function () {
+    falling();
+  }, ANIMATION_SPEED);
+};
+
+var simpleScan = function () {
     var bricks = blocks();
     var siftBricksOnX = function(brick){
         if(brick === null) return;
@@ -187,151 +262,72 @@ var siftingScan = function () {
     var results = [];
 
     for(var i = 0; i< bricks.length; i++) {
+        if(bricks[i]) {
+            var tempOnX = siftBricksOnX(bricks[i]);
+            var tempOnY = siftBricksOnY(bricks[i]);
+            console.log(tempOnX.length);
 
-        var tempOnX = siftBricksOnX(bricks[i] );
-        var tempOnY = siftBricksOnY(bricks[i]);
-        //console.log(tempOnX.length);
-        //console.log(tempOnY.length);
-        if(tempOnX.length > 2) {
-            results = results.concat(tempOnX);
-        }
-        if(tempOnY.length > 2) {
-            results =  results.concat(tempOnY);
-        }
+            if (tempOnX.length > 2) {
 
-    }
-    console.log(results);
-    var foundMatch = results.length > 0;
-    for(var j = 0; j < results.length; j++) {
-        remove(results[j]);
-    }
-
-    return foundMatch;
-
-};
-
-var goLower = function (column, row) {
-   // console.log('goLower');
-
-    try {
-        var brick = gameGrid[column][row], b;
-        if ((brick) === null) return true;
-        if (row > zeroBasedRowCount) return true;
-        if (column > zeroBasedColumnCount) return true;
-
-        if(column > zeroBasedColumnCount) return true;
-        //var below = gameGrid[column][row+1];
-
-        var lowest;
-        for (var i = column + 1; i <= zeroBasedColumnCount; i ++) {
-
-            b = gameGrid[i][row];
-            //console.log(b);
-            if(!b) lowest = i;
-            if(b) break;
-        }
-        if (lowest) console.log('lowest', lowest);
-        if (!lowest) return true;
-        var below = gameGrid[lowest][row];
-        if (below == null  && brick != null) {
-
-            gameGrid[lowest][row] = brick;
-
-            gameGrid[column][row] = null;
-            brick.tweenWithGrid(lowest, row, ANIMATION_SPEED);
-
-            return false;
-        } return true;
-    } catch (err) {
-        console.log(err);
-        console.log('column', column);
-        console.log('row', row);
-        console.log('lowest', lowest);
-        console.dir(gameGrid[column]);
-
-        return true;
-    }
-
-
-};
-var lower = function () {
-    for (column = 0; column < cols ; column++) {
-        for (row = 11; row >= 0 ; row--) {
-            //console.log({column: column, row: row});
-
-            while (!goLower(column, row)) {
-                console.log('while going Lower');
-            };
-        }
-    }
-
-};
-var drop = function () {
-	var column, row;
-	var drops = [];
-
-    console.log('dropping in');
-    var nullSpots = sift({ $exists: false }, blocks());
-    console.log('nullSpots',nullSpots);
-    for (var column = 0; column < cols ; column++) {
-        for (var row = 0; row <  rows; row++) {
-            if(gameGrid[column][row] === null) {
-                console.log('null');
-                gameGrid[column][row] = Brick.init(randomSprite(), row+1, column+1);
+                for (var kk = 0; kk < tempOnX.length; kk++) {
+                    console.log('x match ', tempOnX);
+                    console.log('X gridX', tempOnX[kk].gridX);
+                    console.log('X gridY', tempOnX[kk].gridY);
+                }
+                results = results.concat(tempOnX);
+            }
+            if (tempOnY.length > 2) {
+                console.log(tempOnY.length);
+                console.log('Y match', tempOnY);
+                for (var jj = 0; jj < tempOnY.length; jj++) {
+                    console.log('Y gridX', tempOnY[jj].gridX);
+                    console.log('Y gridY', tempOnY[jj].gridY);
+                }
+                results = results.concat(tempOnY);
             }
         }
+
     }
-    var nullSpotsAfter = sift({ $exists: false }, blocks());
-
-    console.log('nullSpotsAfter',nullSpotsAfter);
-    Crafty.trigger('drop_complete');
-};
-
-
+    return results;
+}
 	return {
 		init : function () { 
-			for (var j = 1; j <= cols ; j++) {
-				gameGrid[j-1] = [cols]			
-				for (var i = 1; i <= rows; i++) { 
-					gameGrid[j-1][i-1] =  Brick.init(randomSprite(), i, j );
+			for (var column = 0; column < cols ; column++) {
+				gameGrid[column] = [cols];
+				for (var row = 0; row <  rows; row++) {
+					gameGrid[column][row] =  Brick.init(randomSprite(), row, column );
 				}
 			}
 
 			Crafty.bind('selected', selection);
             Crafty.bind('scan_complete', function (e) {
 
-                for (var i = 0; i < killBox.length; i++) {
-                    remove(killBox[i]);
-                }
-                for (var j = 0; j < 20; j++) {
-                    fall();
+
+
+            });
+
+            Crafty.bind('inspect', function (entity) {
+                console.log('inspection time');
+
+                console.log('entity', entity);
+
+                var bricks = blocks();
+                var results = [];
+
+                for (var filterCount = 0; filterCount < bricks.length; filterCount++) {
+                    var res = bricks.filter(function (block) {
+                        if (!brick) return false;
+                       return bricks[filterCount].hash == block.hash;
+                    });
+                    if(res.length > 1) throw new Error("doubled up");
                 }
 
-                drop();
-                if (result) {
-                    siftingScan();
-                }
+
 
             });
  
 		},
-        fall: function() {
-
-
-
-            lower();
-
-            for(var i = 0; i < 12; i++) {
-                lower()
-            }
-
-            var sifting = sift({ $exists: true }, blocks());
-            //var res = ;
-
-            //console.log('res', (sift({ $exists: false }, blocks()).length > 0));
-            drop();
-
-        },
+        fall: falling,
         burn:  function (start, finish) {
 			if (start == undefined) {
 				start = 0, finish = gameGrid.length
@@ -357,8 +353,9 @@ var drop = function () {
 			console.log('x', x);
             var brick = gameGrid[y][x];
 			console.log('gridY', brick.gridY);
-			console.log('gridX', brick.gridX);  
-			brick.tween({alpha:0.0}, 500);
+			console.log('gridX', brick.gridX);
+            remove(brick);
+			//brick.tween({alpha:0.0}, 500);
 		}
 
 	};

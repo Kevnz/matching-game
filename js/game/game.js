@@ -25,7 +25,8 @@ define(function () {
         mode: function() {
             return 'Canvas';
         },
-        text: text_css
+        text: text_css,
+        animation_speed: 900
 
  
     }
