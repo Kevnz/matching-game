@@ -78,7 +78,7 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
 	};
 
 var remove = function (brick) {
-	if(!brick.gridX) return;
+	//if(!brick.gridX) return;
 	var x = brick.gridX;
 	var y = brick.gridY;
 	try{
