@@ -54,6 +54,7 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
 
     };
 	var selection = function (brick){
+        if(isMove) return;
 		var previousSelected = currentSelected;
 		currentSelected = brick; 
 		if(previousSelected === null) return;
@@ -61,6 +62,7 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
 		
 
  		if(currentSelected.isAdjacent(previousSelected)){
+            isMove = true;
             swap(currentSelected, previousSelected);
             //return;
             delayFactory(function(){
@@ -68,6 +70,9 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
                 console.log('Selsction Matched? ' + blown);
                 if(!blown) {
                     swap(currentSelected, previousSelected);
+                    delayFactory(function (){
+                        isMove = false;
+                    }, ANIMATION_SPEED);
                 } else {
                     falling();
                     moveDown();
@@ -191,7 +196,7 @@ var moveDown = function (){
     }
 };
 var falling = function() {
-
+    isMove = true;
     delayFactory(function () {
 
         lower();
@@ -204,9 +209,12 @@ var falling = function() {
                 var stillNeedToMove = simpleScan().length > 0;
                 console.log('stillNeedToMove', stillNeedToMove);
                 if(stillNeedToMove){
-                    //loop();
+                    loop();
+                }else{
+                    Crafty.trigger('all_falling_complete');
+                    isMove = false;
                 }
-            })
+            }, ANIMATION_SPEED)
         }, ANIMATION_SPEED);
 
     }, ANIMATION_SPEED);
@@ -284,22 +292,7 @@ var simpleScan = function () {
 
 			Crafty.bind('selected', selection);
             Crafty.bind('drop_complete', function (e) {
-
-            delayFactory(function(){
-                var blown = siftingScan();
-                console.log('Selsction Matched? ' + blown);
-                if(!blown) {
-                } else {
-                    falling();
-                    moveDown();
-
-                }
-            }, ANIMATION_SPEED);
-
-
-
-            
-
+                console.log('drop_complete');
             });
 
             Crafty.bind('inspect', function (entity) {
