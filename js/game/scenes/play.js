@@ -2,9 +2,10 @@ define(['crafty',
 		'game/entities/grid', 
 		'game/entities/scoreboard', 
 		'game/entities/clock',
-		'game/entities/platform'
+		'game/entities/platform',
+		'game/game'
 		], 
-	function (Crafty, Grid, Scoreboard, Clock, Platform) {
+	function (Crafty, Grid, Scoreboard, Clock, Platform, Game) {
 
 
 	return {
@@ -12,7 +13,7 @@ define(['crafty',
 			Crafty.scene('play', function () { 
                 Scoreboard.init();
                 Clock.init();
-                var stand = Platform.init();
+                // var stand = Platform.init(Game.width() - 220);
 				Grid.init();
 
                 /*
@@ -40,10 +41,11 @@ define(['crafty',
 				});
 				Grid.scan();
                  */
-				Crafty.bind('timeup', function () {
-					stand.destroy();
+				// Crafty.bind('timeup', function () {
 
-				})
+				// 	stand.destroy();
+
+				// })
 				//Grid.scan();
 
  			});

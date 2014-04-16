@@ -9,7 +9,6 @@ define(['crafty','game/game'], function (Crafty, Game) {
                         family: Game.text['font-family'], 
                         size: Game.text['font-size']
                     });
- 
                 } 
             });
         }

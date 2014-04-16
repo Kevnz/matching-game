@@ -1,0 +1,13 @@
+*  { -webkit-user-select:none; -webkit-tap-highlight-color:rgba(255, 255, 255, 0); }
+input, textarea  { -webkit-user-select:text; }
+body { background-color:#CCC; color:black; zoom:1; }
+.gamebox {
+	width: 648px;
+	margin: 0 auto;
+}
+#cr-stage {
+	background-color: #E4EBEA;
+}
+#cr-stage canvas{
+	position: static !important;
+}
