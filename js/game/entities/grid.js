@@ -65,7 +65,7 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
             //return;
             delayFactory(function(){
                 var blown = siftingScan();
-                console.log(blown);
+                console.log('Selsction Matched? ' + blown);
                 if(!blown) {
                     swap(currentSelected, previousSelected);
                 } else {
@@ -82,6 +82,8 @@ var remove = function (brick) {
 	var x = brick.gridX;
 	var y = brick.gridY;
 	try{
+        if(gameGrid[y][x] === null) return;
+
 		  gameGrid[y][x] = null;
 		  brick.bind('TweenEnd', function(){
 		  	brick.destroy();
@@ -283,7 +285,20 @@ var simpleScan = function () {
 			Crafty.bind('selected', selection);
             Crafty.bind('drop_complete', function (e) {
 
+            delayFactory(function(){
+                var blown = siftingScan();
+                console.log('Selsction Matched? ' + blown);
+                if(!blown) {
+                } else {
+                    falling();
+                    moveDown();
 
+                }
+            }, ANIMATION_SPEED);
+
+
+
+            
 
             });
 
