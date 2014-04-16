@@ -7,9 +7,9 @@ define(['crafty', 'game/assets/loading'], function (Crafty, loading) {
 		init : function () {
 			Crafty.scene('load', function () {
 				loading.init();
-				Crafty.load(['/assets/blocks.png', '/assets/play_pause.png'], function () {
+				Crafty.load(['/assets/gems.png', '/assets/play_pause.png'], function () {
 					console.log('splicing');
-					Crafty.sprite(32, '/assets/gems.png', {
+					Crafty.sprite(72, '/assets/gems.png', {
 						blue: [0, 0],
 						red: [1,0],
 						yellow: [2,0],

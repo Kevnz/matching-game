@@ -2,11 +2,11 @@ define(['crafty','game/game', 'game/components/actor', 'game/components/selectab
 
 var inspect = function (e) {
     console.log(e);
-    if (e.mouseButton === Crafty.mouseButtons.RIGHT) {
+    if (e.mouseButton === Crafty.mouseButtons.LEFT) {
         console.log('inspect');
         console.log(this.gridX);
         console.log(this.gridY);
-        Crafty.trigger('inspect', this);
+        Crafty.trigger('selected', this);
         return;
     }
 };
@@ -19,19 +19,17 @@ var inspect = function (e) {
           //.gravity( "Platform"   )
           //.gravityConst(0.7)
           .bind('MouseUp', inspect)
-          .bind('Click', function (e) {
+          .bind('MouseDown', function (e) {
               console.log(e);
-              if(e.mouseButton === Crafty.mouseButtons.RIGHT){
+              if(e.mouseButton === Crafty.mouseButtons.LEFT){
                   console.log('inspect');
                   console.log(this.gridX);
                   console.log(this.gridY);
-                  return;
               }
               console.log('click');
 
               this.attr('clicked', true);
               Crafty.trigger('selected', this);
-              this.addComponent(selectedSprite );
               this.removeComponent(sprite);
               this.attr('clicked', false);
           })
@@ -64,7 +62,7 @@ var inspect = function (e) {
                 .attr({color: sprite, alpha: 0})
                 //.gravity( "Platform"   )
                 //.gravityConst(0.7)
-                .bind('MouseUp', inspect)
+                .bind('MouseDown', inspect)
                 .bind('Click', function (e) {
                     if(e.mouseButton === Crafty.mouseButtons.RIGHT){
 

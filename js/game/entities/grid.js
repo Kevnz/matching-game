@@ -40,16 +40,17 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
     var killBox = [];
 	var currentSelected = null;
     var swap = function (brick1, brick2){
-
+        console.log('SWAPPING NOW');
+        console.log(brick1, brick2);
         var x1 = brick1.x, x2 = brick2.x, y1 = brick1.y, y2 = brick2.y;
         var gridX1 = brick1.gridX, gridX2 = brick2.gridX, gridY1 = brick1.gridY, gridY2 = brick2.gridY;
 
         gameGrid[gridY1][gridX1] = brick2;
         gameGrid[gridY2][gridX2] = brick1;
         brick1.attr({gridX:gridX2, gridY: gridY2});
-        brick1.tween({x:x2, y:y2}, 500);
+        brick1.tween({x:x2, y:y2}, ANIMATION_SPEED);
         brick2.attr({gridX:gridX1, gridY: gridY1});
-        brick2.tween({x:x1, y:y1}, 500);
+        brick2.tween({x:x1, y:y1}, ANIMATION_SPEED);
 
     };
 	var selection = function (brick){
@@ -70,7 +71,6 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
                 } else {
                     falling();
                     moveDown();
-
                 }
                 currentSelected = null;
             }, ANIMATION_SPEED);
