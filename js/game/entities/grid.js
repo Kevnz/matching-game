@@ -14,7 +14,7 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
 		var to = 7, from = 0;
 		var random = Math.floor(Math.random() * (to - from + 1) + from);
 
-		var sprites = ['red', 'blue', 'green', 'yellow','black', 'purple', 'orange', 'grey'];
+		var sprites = ['red', 'blue', 'green', 'yellow','purple', 'orange', 'grey','black'];
 
 		return sprites[random];
 	}
@@ -32,7 +32,7 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
                     ent.hash = 'column:'+column+'|row:' + row;
                 }
                 //
-                results.push(ent);
+                results[cols * ent.gridY + ent.gridX] = ent;
             }
         }
         return results;
@@ -228,57 +228,80 @@ var loop = function () {
 
 var simpleScan = function () {
     var bricks = blocks();
-    var siftBricksOnX = function(brick){
-        if(brick === null) return;
-        var x = brick.gridX, y = brick.gridY, color = brick.color;
-        return sift({
-            gridY: function (value) {
-                return value === y;
-            },
-            gridX: function(value) {
-                return value === x || value === (x-1) || value === (x+1);
-            },
-            color: function (value) {
-                return value === color;
-            }
-        },bricks);
+
+    var getCol = function(col){
+        return bricks.slice(col*cols, (col+1)*cols);
     };
 
-    var siftBricksOnY = function(brick){
-        var x = brick.gridX, y = brick.gridY, color = brick.color;
-        return sift({
-            gridX: function (value) {
-                return value === x;
-            },
-            gridY: function(value) {
-                return value === y || value === (y-1) || value === (y+1);
-            },
-            color: function (value) {
-                return value ==color;
+    var getRow = function(row){
+        var results = [];
+        for (var i = row; i < bricks.length; i+=rows) {
+            results.push(bricks[i]);
+        };
+        return results;
+    };
+
+
+    var siftBricks = function(brickss){
+
+        var currentColor = brickss[0].color;
+        var tempMatch = [];
+        var matches = [];
+        for(var i = 0; i< brickss.length; i++) {
+            var brick = brickss[i];
+            console.log(i, brick.color);
+
+            if(brick.color === currentColor) {
+                tempMatch.push(brick);
             }
-        },bricks);
+            else{
+                if(tempMatch.length > 2){
+                    matches.push(tempMatch.slice(0));
+                }
+                currentColor = brick.color;
+                tempMatch = [brick];
+            }
+        }
+        if(tempMatch.length > 2){
+            matches.push(tempMatch.slice(0));
+        }
+
+        //return matches;
+        console.log('SIFTBRICKS RESULTS:', matches.length);
+        console.log(brickss);
+
+        var matches1d = [];
+
+        for(var i = 0; i< matches.length; i++) {
+            matches1d = matches1d.concat(matches[i]);
+        }   
+
+        return matches1d;
     };
 
 
     var results = [];
 
-    for(var i = 0; i< bricks.length; i++) {
-        if(bricks[i]) {
-            var tempOnX = siftBricksOnX(bricks[i]);
-            var tempOnY = siftBricksOnY(bricks[i]);
-
-            if (tempOnX.length > 2) {
-
-
-                results = results.concat(tempOnX);
-            }
-            if (tempOnY.length > 2) {
-
-                results = results.concat(tempOnY);
-            }
-        }
-
+    for(var i = 0; i< cols; i++) {
+        var myCol = getCol(i);
+        //console.log(myCol);
+        console.log('Matches on col:', i);
+        var tempResults = siftBricks(myCol);
+        //console.log(tempResults);
+        results = results.concat(tempResults);
     }
+
+    for(var j = 0; j< rows; j++) {
+       //results = results.concat(siftBricks(getRow(i)));
+        var myRow = getRow(j);
+        //console.log(myCol);
+        console.log('Matches on row:', j);
+        var tempResultsRow = siftBricks(myRow);
+        //console.log(tempResults);
+        results = results.concat(tempResultsRow);
+    }
+    console.log('RESULTS:::');
+    console.log(results);
     return results;
 }
 	return {
