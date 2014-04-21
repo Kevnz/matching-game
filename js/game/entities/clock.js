@@ -2,7 +2,7 @@ define(['crafty', 'game/game', 'game/components/display', 'game/entities/platfor
     return {
         init : function () {
             var timerWidth = Game.width() - 220;
-            var gameTime = 3 * 60;
+            var gameTime = 2 * 60;
             var timerBar = Platform.init(0);
 
             Display.init( Game.width() - 120, Game.height() - 65 );

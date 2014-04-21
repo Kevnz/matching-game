@@ -1,16 +1,16 @@
-define(['crafty', 'game/game', 'game/components/display', 'game/start'], function (Crafty, Game, Display, Start) {
+define(['crafty', 'game/game', 'game/components/display', 'game/start', 'game/scenes/submitscore', 'game/entities/scoreboard'], function (Crafty, Game, Display, Start, Submitscore, Scoreboard) {
     return {
         init : function () {
             Crafty.scene('end', function () {
                 Display.init();
-                var TheEnd = Crafty.e('Display').text('The End').attr({x:280, y:200}).textFont({
-                    family: Game.text['font-family'],
-                    size: 800
-                });
+                var TheEnd = Crafty.e("HTML")
+                    .attr({w: Game.width(), h: Game.height(), x:0, y:130})
+                    .replace('<div class="gameover"><h2>GAME OVER</h2><p>Total Score</p><h1>' + Scoreboard.getScore() + '</h1></div>')
+                    ;
 
                 
                 var btnReplay = Crafty.e("HTML, Mouse")
-                    .attr ({x: 230, y: 327, w: 200, h: 50})
+                    .attr ({x: 220, y: 357, w: 200, h: 50})
                     .replace('<div class="btn yellow">Replay</div>')
                     .bind('MouseDown', function (e) {
                         Display.init();
@@ -18,13 +18,13 @@ define(['crafty', 'game/game', 'game/components/display', 'game/start'], functio
                         Crafty.scene('load');
                     });
 
-                // var btnSubmitScore = Crafty.e("HTML, Mouse")
-                //     .attr ({x: 230, y: 390, w: 200, h: 50})
-                //     .replace('<div class="btn green">Submit Score</div>')
-                //     .bind('MouseDown', function (e) {
-                //         Display.submitForm();
-                //     });
-
+                var btnSubmitScore = Crafty.e("HTML, Mouse")
+                    .attr ({x: 220, y: 420, w: 200, h: 50})
+                    .replace('<div class="btn green">Submit Score</div>')
+                    .bind('MouseDown', function (e) {
+                        Crafty("2D").destroy();
+                        Submitscore.init();
+                    });
 
             });
         }

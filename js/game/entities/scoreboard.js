@@ -1,6 +1,10 @@
 define(['crafty', 'game/game', 'game/components/display'], function (Crafty, Game, Display) {
 	var score = 0;
+
 	return {
+            getScore: function() {
+                  return score;
+            },
 		init : function () {
             Display.init(Game.width()/2 - 45, 20)
 

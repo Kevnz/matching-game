@@ -11,7 +11,7 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
 	var zeroBasedRowCount = rows -1;
 	var zeroBasedColumnCount = cols - 1;
 	var randomSprite = function () {
-		var to = 7, from = 0;
+		var to = 5, from = 0;
 		var random = Math.floor(Math.random() * (to - from + 1) + from);
 
 		var sprites = ['red', 'blue', 'green', 'yellow','purple', 'orange', 'grey','black'];
