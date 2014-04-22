@@ -28,7 +28,7 @@ define(function () {
             return 'Canvas';
         },
         text: text_css,
-        animation_speed: 400
+        animation_speed: 300
 
  
     }

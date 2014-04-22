@@ -1,5 +1,5 @@
-define(['crafty', 'game/game','game/entities/brick', 'sift'],
-	function (Crafty, Game, Brick, sift) {
+define(['crafty', 'game/game','game/entities/brick', 'sift', 'game/entities/clock'],
+	function (Crafty, Game, Brick, sift, Clock) {
 
     var delayFactory =  function (callback, delayTime){
         return Crafty.e("Delay").delay(callback, delayTime, 0);
@@ -232,6 +232,9 @@ var lower = function () {
 
 };
 var drop = function () {
+    if(Clock.getTime() === 0){
+        return;
+    }
 	var column, row;
 	var drops = [];
 
@@ -256,6 +259,9 @@ var moveDown = function (){
     }
 };
 var falling = function() {
+    if(Clock.getTime() === 0){
+        return;
+    }
     isMove = true;
     delayFactory(function () {
 
@@ -436,8 +442,11 @@ var siftBricks = function(brickLine){
 
 var simpleScan = function () {
     //var bricks = blocks();
+    if(Clock.getTime() === 0){
+        return [];
+    }
     var results = [];
-
+    
     for(var i = 0; i< cols; i++) {
         var myCol = getCol(i);
         var tempResults = siftBricks(myCol);
