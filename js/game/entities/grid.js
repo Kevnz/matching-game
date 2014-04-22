@@ -11,7 +11,9 @@ define(['crafty', 'game/game','game/entities/brick', 'sift', 'game/entities/cloc
 	var cols = Game.columns;
 	var zeroBasedRowCount = rows -1;
 	var zeroBasedColumnCount = cols - 1;
-	var randomSprite = function () {
+    var comments = ["WOW!", "AWESOME!", "YOUR GOOD!", "NO MORE MOVES"];
+	var showingComment = false;
+    var randomSprite = function () {
 		var to = 5, from = 0;
 		var random = Math.floor(Math.random() * (to - from + 1) + from);
 
@@ -22,9 +24,7 @@ define(['crafty', 'game/game','game/entities/brick', 'sift', 'game/entities/cloc
 	var gameGrid = [cols];
     var blocks =function(){
         var results = [];
-
         var row,column;
-
 
         for (column = 0; column < gameGrid.length; column++) {
             for (row = 0; row < gameGrid[column].length; row++) {
@@ -92,6 +92,8 @@ define(['crafty', 'game/game','game/entities/brick', 'sift', 'game/entities/cloc
             }, ANIMATION_SPEED);
  		}
 	};
+   
+
 
 var remove = function (brick, insertPowerGem) {
 	//if(!brick.gridX) return;
@@ -168,11 +170,41 @@ var siftingScan = function () {
         if(hasPower){
             removeColor(groupColor);
         }
+
+        if(matchGroup.length === 4){
+            Crafty.trigger('showComment', 0);
+        }
+    }
+    if(results.length > 1){
+        Crafty.trigger('showComment', 1);
     }
 
     return foundMatch;
 
 };
+
+Crafty.bind('showComment', function(i){
+    if(showingComment){
+        return;
+    }
+    showingComment = true;
+
+    var showText = myComment(comments[i]);
+
+    delayFactory(function (){
+       showingComment = false;
+    }, 500);
+
+    delayFactory(function (){
+       showText.destroy();
+    }, 2000);
+})
+
+var myComment = function(text){
+    return Crafty.e("2D, Tween, HTML").attr({w: Game.width(), x: 0, y: 200 })
+            .replace("<h1 class='game-comment'>" + text + "</h1>")
+            .tween({alpha: 0.0, w: Game.width(), x: 0, y: 300}, 2000);
+}
 
 var getLocationHash = function(brick){
     return brick.gridX +',' + brick.gridY;
@@ -281,7 +313,7 @@ var falling = function() {
                     isMove = false;
                     //console.log('Moves Available?', isMovesAvailable());
                     if(!isMovesAvailable()){
-                        alert('NO MORRE MOVES!!');
+                        Crafty.trigger('noMoreMoves');
                     }
                 }
             }, ANIMATION_SPEED)

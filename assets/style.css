@@ -84,3 +84,9 @@ table td{
 .gameover{
 	text-align: center;
 }
+.game-comment{
+	text-align: center;
+	font-size: 50px;
+	color: #F1C40F;
+	text-shadow: 1px 1px 1px #F39C12;
+}

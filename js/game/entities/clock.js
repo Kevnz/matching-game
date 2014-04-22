@@ -32,6 +32,10 @@ define(['crafty', 'game/game', 'game/components/display', 'game/entities/platfor
                     this.time = this.time + e;
                     this.time = Math.min(this.time, gameTime);
                     console.log('Adding Time...', e);
+            })
+            .bind('noMoreMoves', function (){
+                this.time = 2;
+                Crafty.trigger('showComment', 3);
             });
         }
     };

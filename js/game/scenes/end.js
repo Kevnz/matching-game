@@ -8,8 +8,8 @@ define(['crafty', 'game/game', 'game/components/display', 'game/start', 'game/sc
                     .replace('<div class="gameover"><h2>GAME OVER</h2><p>Total Score</p><h1>' + Scoreboard.getScore() + '</h1></div>')
                     ;
 
-                
-                var btnReplay = Crafty.e("HTML, Mouse")
+               
+                 var btnReplay = Crafty.e("HTML, Mouse")
                     .attr ({x: 220, y: 357, w: 200, h: 50})
                     .replace('<div class="btn yellow">Replay</div>')
                     .bind('MouseDown', function (e) {
