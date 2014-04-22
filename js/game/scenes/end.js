@@ -1,7 +1,10 @@
-define(['crafty', 'game/game', 'game/components/display', 'game/start', 'game/scenes/submitscore', 'game/entities/scoreboard', 'game/scenes/play'], function (Crafty, Game, Display, Start, Submitscore, Scoreboard, play) {
+define(['crafty', 'game/game', 'game/components/display', 'game/start', 'game/scenes/submitscore', 'game/entities/grid', 'game/entities/scoreboard', 'game/scenes/play'], function (Crafty, Game, Display, Start, Submitscore, Grid, Scoreboard, play) {
     return {
         init : function () {
             Crafty.scene('end', function () {
+                Scoreboard.uninit();
+                Grid.uninit();
+
                 Display.init();
                 var TheEnd = Crafty.e("HTML")
                     .attr({w: Game.width(), h: Game.height(), x:0, y:130})
@@ -13,17 +16,13 @@ define(['crafty', 'game/game', 'game/components/display', 'game/start', 'game/sc
                     .attr ({x: 220, y: 357, w: 200, h: 50})
                     .replace('<div class="btn yellow">Replay</div>')
                     .bind('MouseDown', function (e) {
-                        Display.init();
-                        Crafty("2D").destroy();
                         Crafty.scene('play');
-                        play.init();
                     });
 
                 var btnSubmitScore = Crafty.e("HTML, Mouse")
                     .attr ({x: 220, y: 420, w: 200, h: 50})
                     .replace('<div class="btn green">Submit Score</div>')
                     .bind('MouseDown', function (e) {
-                        Crafty("2D").destroy();
                         Submitscore.init();
                     });
 

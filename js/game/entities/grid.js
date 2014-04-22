@@ -312,6 +312,9 @@ var falling = function() {
                     Crafty.trigger('all_falling_complete');
                     isMove = false;
                     //console.log('Moves Available?', isMovesAvailable());
+                    if(Clock.getTime() === 0){
+                        return;
+                    }
                     if(!isMovesAvailable()){
                         Crafty.trigger('noMoreMoves');
                     }
@@ -529,6 +532,11 @@ var simpleScan = function () {
             });
  
 		},
+        uninit : function () {
+            Crafty.unbind('selected');
+            Crafty.unbind('drop_complete');
+            Crafty.unbind('inspect');
+        },
         fall: falling,
         burn:  function (start, finish) {
 			if (start == undefined) {
