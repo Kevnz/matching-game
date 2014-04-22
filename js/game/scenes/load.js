@@ -1,14 +1,13 @@
-define(['crafty', 'game/assets/loading'], function (Crafty, loading) {
+define(['crafty', 'game/assets/loading','game/components/display', 'game/game'], function (Crafty, loading, Display, Game) {
 	var playScene = function () {
 		console.log('playScene');
 		Crafty.scene('play');
 	};
 	return {
 		init : function () {
+			
 			Crafty.scene('load', function () {
-				loading.init();
 				Crafty.load(['/assets/gems.png', '/assets/play_pause.png'], function () {
-					console.log('splicing');
 					Crafty.sprite(72, '/assets/gems.png', {
 						blue: [5, 0],
 						red: [1,0],
@@ -33,11 +32,15 @@ define(['crafty', 'game/assets/loading'], function (Crafty, loading) {
 						play: [0, 0],
 						pause: [1,0]
 					});
-					setTimeout(playScene, 2000);
+					Crafty.e("2D, DOM, HTML, Mouse")
+				      .attr({ w: Game.width() / 2, h: Game.height(), x: Game.width() / 2 - 155, y: Game.width() / 2})
+				      .replace('<div class="btn green">START GAME</div>')
+				      .bind('MouseDown', function (e) {
+			           	Display.init();
+                        Crafty("2D").destroy();
+                        Crafty.scene('play');
+			        });
 				});
-
-				//
-				//
 			});
 		}
 	};
