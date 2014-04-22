@@ -2,7 +2,6 @@ define(['crafty', 'game/game', 'game/components/display'], function (Crafty, Gam
 	var score = 0;
 
 	return {
-
             getScore: function() {
                   return score;
             },
