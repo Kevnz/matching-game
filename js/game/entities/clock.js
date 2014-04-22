@@ -7,7 +7,7 @@ define(['crafty', 'game/game', 'game/components/display', 'game/entities/platfor
 
             Display.init( Game.width() - 120, Game.height() - 65 );
 
-            Crafty.e('Display').attr({time: gameTime}).text('3:00').bind('EnterFrame', function (f) {
+            Crafty.e('Display').attr({time: gameTime}).text('2:00').bind('EnterFrame', function (f) {
                 //50
                 if(this.time === 0) {
                    Crafty.trigger('timeup');
