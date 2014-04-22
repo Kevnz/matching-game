@@ -14,6 +14,10 @@ define(['crafty', 'game/game', 'game/components/display'], function (Crafty, Gam
             	score = (e+score);
             	scoreboard.text('Score: ' + score);
             	console.log('score')
+
+                  if(score % 500 == 0)
+                        Crafty.trigger('addTime', 30);
+
             });
 
 

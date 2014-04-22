@@ -28,6 +28,10 @@ define(['crafty', 'game/game', 'game/components/display', 'game/entities/platfor
                     this.text(displayTime.toString().split('.')[0] + ':' + ((this.time % 60) < 10 ? '0' + (this.time % 60) : (this.time % 60))  );
                     currentTime = this.time;
                 }
+            }).bind('addTime', function (e){
+                    this.time = this.time + e;
+                    this.time = Math.min(this.time, gameTime);
+                    console.log('Adding Time...', e);
             });
         }
     };
