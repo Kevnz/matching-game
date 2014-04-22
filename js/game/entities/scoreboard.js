@@ -2,10 +2,12 @@ define(['crafty', 'game/game', 'game/components/display'], function (Crafty, Gam
 	var score = 0;
 
 	return {
+
             getScore: function() {
                   return score;
             },
 		init : function () {
+            score = 0;
             Display.init(Game.width()/2 - 45, 20)
 
             var scoreboard = Crafty.e('Display').text('Score: 0');
@@ -14,6 +16,7 @@ define(['crafty', 'game/game', 'game/components/display'], function (Crafty, Gam
             	scoreboard.text('Score: ' + score);
             	console.log('score')
             });
+
 
 		}
 	};

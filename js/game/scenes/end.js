@@ -1,4 +1,4 @@
-define(['crafty', 'game/game', 'game/components/display', 'game/start', 'game/scenes/submitscore', 'game/entities/scoreboard'], function (Crafty, Game, Display, Start, Submitscore, Scoreboard) {
+define(['crafty', 'game/game', 'game/components/display', 'game/start', 'game/scenes/submitscore', 'game/entities/scoreboard', 'game/scenes/play'], function (Crafty, Game, Display, Start, Submitscore, Scoreboard, play) {
     return {
         init : function () {
             Crafty.scene('end', function () {
@@ -15,7 +15,8 @@ define(['crafty', 'game/game', 'game/components/display', 'game/start', 'game/sc
                     .bind('MouseDown', function (e) {
                         Display.init();
                         Crafty("2D").destroy();
-                        Crafty.scene('load');
+                        Crafty.scene('play');
+                        play.init();
                     });
 
                 var btnSubmitScore = Crafty.e("HTML, Mouse")
