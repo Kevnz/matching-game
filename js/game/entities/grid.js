@@ -54,6 +54,16 @@ define(['crafty', 'game/game','game/entities/brick', 'sift'],
         brick2.tween({x:x1, y:y1}, ANIMATION_SPEED);
 
     };
+    var swapHidden = function (brick1, brick2){
+        var x1 = brick1.x, x2 = brick2.x, y1 = brick1.y, y2 = brick2.y;
+        var gridX1 = brick1.gridX, gridX2 = brick2.gridX, gridY1 = brick1.gridY, gridY2 = brick2.gridY;
+
+        gameGrid[gridY1][gridX1] = brick2;
+        gameGrid[gridY2][gridX2] = brick1;
+        brick1.attr({gridX:gridX2, gridY: gridY2});
+        brick2.attr({gridX:gridX1, gridY: gridY1});
+
+    };
 	var selection = function (brick){
         if(isMove) return;
 		var previousSelected = currentSelected;
@@ -263,6 +273,10 @@ var falling = function() {
                 }else{
                     Crafty.trigger('all_falling_complete');
                     isMove = false;
+                    //console.log('Moves Available?', isMovesAvailable());
+                    if(!isMovesAvailable()){
+                        alert('NO MORRE MOVES!!');
+                    }
                 }
             }, ANIMATION_SPEED)
         }, ANIMATION_SPEED);
@@ -276,58 +290,152 @@ var loop = function () {
   }, ANIMATION_SPEED);
 };
 
+var isMovesAvailable = function(){
+
+    var row,column;
+    for (column = 0; column < gameGrid.length; column++) {
+        for (row = 0; row < gameGrid[column].length; row++) {
+            var brick = gameGrid[column][row];
+            if(brick && getBrickMoves(brick).length) {
+                return true
+            }
+        }
+    }
+    return false;
+
+};
+
+var showHint = function(){
+
+    var row,column, results = [];
+    for (column = 0; column < gameGrid.length; column++) {
+        for (row = 0; row < gameGrid[column].length; row++) {
+            var brick = gameGrid[column][row];
+            if(brick) {
+                brick.attr({alpha: 1.0});
+                if(!results.length)
+                    results = getBrickMoves(brick);
+            }
+        }
+    }
+
+    if(results.length){
+        for(var j = 0; j < results.length; j++) {
+            var matchGroup = results[j];
+            for (var i = 0; i < matchGroup.length; i++){
+                matchGroup[i].attr({alpha: 0.5});
+            }
+        }
+    }
+
+};
+
+
+var getBrickMoves = function(brick){
+    var x = brick.gridX,
+        y = brick.gridY;
+
+    var topY    = y - 1,
+        bottomY = y + 1,
+        leftX   = x - 1,
+        rightX  = x + 1;
+
+    var results = [];
+
+    if(topY >= 0){
+        var topBrick = gameGrid[topY][x];
+
+        swapHidden(brick, topBrick);
+
+        results = results.concat(siftBricks(getCol(y)));
+        results = results.concat(siftBricks(getRow(x)));
+
+        swapHidden(brick, topBrick);
+    }
+    if(bottomY < rows){
+        var bottomBrick = gameGrid[bottomY][x];
+
+        swapHidden(brick, bottomBrick);
+
+        results = results.concat(siftBricks(getCol(y)));
+        results = results.concat(siftBricks(getRow(x)));
+
+        swapHidden(brick, bottomBrick);
+    }
+    if(leftX >= 0){
+        var leftBrick = gameGrid[y][leftX];
+
+        swapHidden(brick, leftBrick);
+
+        results = results.concat(siftBricks(getCol(y)));
+        results = results.concat(siftBricks(getRow(x)));
+
+        swapHidden(brick, leftBrick);
+    }
+    if(rightX < cols){
+        var rightBrick = gameGrid[y][rightX];
+
+        swapHidden(brick, rightBrick);
+
+        results = results.concat(siftBricks(getCol(y)));
+        results = results.concat(siftBricks(getRow(x)));
+
+        swapHidden(brick, rightBrick);
+    }
+    return results;
+};
+
+var getCol = function(col){
+    return gameGrid[col];
+};
+
+var getRow = function(row){
+    var results = [];
+    for (var i = 0; i < gameGrid.length; i++) {
+        results.push(gameGrid[i][row]);
+    };
+    return results;
+};
+
+
+var siftBricks = function(brickLine){
+
+    var currentColor = brickLine[0].color;
+    var tempMatch = [];
+    var matches = [];
+    for(var i = 0; i< brickLine.length; i++) {
+        var brick = brickLine[i];
+
+        if(currentColor === 'power') {
+            currentColor = brick.color;
+        }
+
+        if(brick.color === currentColor || brick.color === 'power') {
+            tempMatch.push(brick);
+        }
+        else{
+            if(tempMatch.length > 2){
+                matches.push(tempMatch.slice(0));
+                tempMatch = [brick];
+            } else if(tempMatch[tempMatch.length-1].color === 'power'){
+                tempMatch = [tempMatch[tempMatch.length-1], brick];
+            } else{
+                tempMatch = [brick];
+            }
+
+            currentColor = brick.color;
+        }
+    }
+    if(tempMatch.length > 2){
+        matches.push(tempMatch.slice(0));
+    }
+
+    return matches;
+};
+
+
 var simpleScan = function () {
-    var bricks = blocks();
-
-    var getCol = function(col){
-        return bricks.slice(col*cols, (col+1)*cols);
-    };
-
-    var getRow = function(row){
-        var results = [];
-        for (var i = row; i < bricks.length; i+=rows) {
-            results.push(bricks[i]);
-        };
-        return results;
-    };
-
-
-    var siftBricks = function(brickss){
-
-        var currentColor = brickss[0].color;
-        var tempMatch = [];
-        var matches = [];
-        for(var i = 0; i< brickss.length; i++) {
-            var brick = brickss[i];
-
-            if(currentColor === 'power') {
-                currentColor = brick.color;
-            }
-
-            if(brick.color === currentColor || brick.color === 'power') {
-                tempMatch.push(brick);
-            }
-            else{
-                if(tempMatch.length > 2){
-                    matches.push(tempMatch.slice(0));
-                    tempMatch = [brick];
-                } else if(tempMatch[tempMatch.length-1].color === 'power'){
-                    tempMatch = [tempMatch[tempMatch.length-1], brick];
-                } else{
-                    tempMatch = [brick];
-                }
-
-                currentColor = brick.color;
-            }
-        }
-        if(tempMatch.length > 2){
-            matches.push(tempMatch.slice(0));
-        }
-
-        return matches;
-    };
-
-
+    //var bricks = blocks();
     var results = [];
 
     for(var i = 0; i< cols; i++) {
