@@ -146,7 +146,7 @@ var siftingScan = function () {
         var matchGroup = results[j];
         var hasPower = false;
         var groupColor = '';
-        var insertPower = matchGroup.length >= 5;
+        var insertPower = matchGroup.length >= 4;
         var insertAt = Math.floor(matchGroup.length / 2);
         var locationHash = getLocationHash(matchGroup[insertAt]);
         if(insertPower){
